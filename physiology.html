@@ -386,13 +386,12 @@
         </div>
     </div>
 
-    <script>
+             <script>
         // Replace with your new Google Script URL
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwxj6iR4ykNbtIHukRKXCcDh_Z-WtbLWQrxiwXnZ0QI4MBaCV5ymh8yx-jwtNPxZh00Ug/exec';
+        const SCRIPT_URL = 'YOUR_NEW_GOOGLE_SCRIPT_URL_HERE';
         const DEPARTMENT = 'Physiology';
         
         let formData = {};
-        let duplicateOverride = false;
         
         // Load saved data if exists
         window.onload = function() {
@@ -471,31 +470,11 @@
         }
         
         function submitForm() {
-            document.getElementById('submitSpinner').style.display = 'inline-block';
+            // Show loading state
+            const btn = document.querySelector('#reviewSection .btn-primary');
+            btn.innerHTML = 'Submitting...';
+            btn.disabled = true;
             
-            // Check for duplicates unless overridden
-            if (!duplicateOverride) {
-                checkDuplicate().then(isDuplicate => {
-                    if (isDuplicate) {
-                        document.getElementById('submitSpinner').style.display = 'none';
-                        document.getElementById('duplicateModal').style.display = 'flex';
-                        return;
-                    }
-                    doSubmit();
-                });
-            } else {
-                doSubmit();
-            }
-        }
-        
-        function checkDuplicate() {
-            return fetch(`${SCRIPT_URL}?action=checkDuplicate&name=${encodeURIComponent(formData.fullName)}&phone=${encodeURIComponent(formData.phone)}&dept=${DEPARTMENT}`)
-                .then(response => response.json())
-                .then(data => data.duplicate)
-                .catch(() => false);
-        }
-        
-        function doSubmit() {
             fetch(SCRIPT_URL, {
                 method: 'POST',
                 body: JSON.stringify({
@@ -505,30 +484,61 @@
             })
             .then(response => response.json())
             .then(data => {
-                document.getElementById('submitSpinner').style.display = 'none';
+                btn.innerHTML = 'Confirm Submit';
+                btn.disabled = false;
                 
                 if (data.success) {
                     sessionStorage.removeItem('formData');
                     document.getElementById('successModal').style.display = 'flex';
+                } else if (data.duplicate) {
+                    document.getElementById('duplicateModal').style.display = 'flex';
                 } else {
                     alert('Error submitting form. Please try again.');
                 }
             })
             .catch(error => {
-                document.getElementById('submitSpinner').style.display = 'none';
-                alert('Error submitting form. Please try again.');
+                btn.innerHTML = 'Confirm Submit';
+                btn.disabled = false;
+                alert('Error submitting form. Please check your connection.');
             });
         }
         
         function closeModal() {
             document.getElementById('duplicateModal').style.display = 'none';
-            duplicateOverride = false;
         }
         
         function proceedAnyway() {
-            duplicateOverride = true;
             closeModal();
-            doSubmit();
+            
+            // Force submit bypassing duplicate check
+            const btn = document.querySelector('#reviewSection .btn-primary');
+            btn.innerHTML = 'Submitting...';
+            btn.disabled = true;
+            
+            fetch(SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify({
+                    action: 'submitForce',
+                    data: formData
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                btn.innerHTML = 'Confirm Submit';
+                btn.disabled = false;
+                
+                if (data.success) {
+                    sessionStorage.removeItem('formData');
+                    document.getElementById('successModal').style.display = 'flex';
+                } else {
+                    alert('Error submitting form.');
+                }
+            })
+            .catch(error => {
+                btn.innerHTML = 'Confirm Submit';
+                btn.disabled = false;
+                alert('Error submitting form.');
+            });
         }
         
         function resetForm() {
@@ -542,5 +552,7 @@
             window.location.href = 'index.html';
         }
     </script>
+       
+            
 </body>
 </html>
