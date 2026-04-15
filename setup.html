@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Setup Admin Password</title>
+</head>
+<body>
+    <h2>Setup Admin Password</h2>
+    <button onclick="setPassword()">Set Password to "Hafsah"</button>
+    <p id="msg"></p>
+    
+    <script>
+        function setPassword() {
+            localStorage.setItem('adminPass', 'Hafsah');
+            document.getElementById('msg').innerHTML = 'Password set! You can now close this page and open admin.html';
+        }
+    </script>
+</body>
+</html>
