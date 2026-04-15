@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Registration - Select Department</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+            text-align: left;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        select {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+            background: white;
+            cursor: pointer;
+        }
+        
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+        
+        .admin-link {
+            margin-top: 20px;
+            font-size: 14px;
+        }
+        
+        .admin-link a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        
+        .admin-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Student Registration</h1>
+        <p class="subtitle">Please select your department to continue</p>
+        
+        <form id="deptForm">
+            <div class="form-group">
+                <label for="department">Department</label>
+                <select id="department" name="department" required>
+                    <option value="">-- Select Department --</option>
+                    <option value="anatomy">Anatomy</option>
+                    <option value="physiology">Physiology</option>
+                </select>
+            </div>
+            
+            <button type="submit" class="btn">Continue</button>
+        </form>
+        
+        <div class="admin-link">
+            <a href="admin.html">Admin Access</a>
+        </div>
+    </div>
+
+    <script>
+        // Check for saved session on load
+        window.onload = function() {
+            const savedDept = sessionStorage.getItem('selectedDepartment');
+            const savedData = sessionStorage.getItem('formData');
+            
+            if (savedDept && savedData) {
+                const restore = confirm('You have unsaved progress. Would you like to continue where you left off?');
+                if (restore) {
+                    window.location.href = savedDept + '.html';
+                } else {
+                    sessionStorage.clear();
+                }
+            }
+        };
+        
+        document.getElementById('deptForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const dept = document.getElementById('department').value;
+            
+            if (!dept) {
+                alert('Please select a department');
+                return;
+            }
+            
+            sessionStorage.setItem('selectedDepartment', dept);
+            window.location.href = dept + '.html';
+        });
+    </script>
+</body>
+</html>
